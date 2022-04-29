@@ -1,7 +1,8 @@
-# Menu Title: Case Mount (Dynamic)
+# encoding: ASCII-8BIT
+# Menu Title: Case Mount Item Export
 # Needs Case: true
 # Needs Selected Items: false
-# Author: Cameron Stiller
+# Author: Clayten Gillis
 # Version: 1.0
 runTests=false
 # Turn On/Off debug statements to console.  It is not recommended
@@ -170,8 +171,8 @@ $lookup={
 	"Readme.txt"=>FabricatedItem.new("Readme.txt","text/plain", Base64.encode64("Label=" + $currentCase.getName()))
 }
 
-def buildLookup(profileName)
-	meta=$utilities.getMetadataProfileStore().getMetadataProfile(profileName).getMetadata()
+def buildLookup() #profileName
+	#meta=$utilities.getMetadataProfileStore().getMetadataProfile(profileName).getMetadata()
 	if($DebugLookup)
 		puts meta
 	end
@@ -192,7 +193,7 @@ def buildLookup(profileName)
 	end
 	loadfile="Guid\tPath"
 	foldercount = 1
-	ProgressDialog.new(0,0,items.length+1,"building lookup based on profile:" + profileName,800,80) do | dialog|
+	ProgressDialog.new(0,0,items.length+1,"Building item lookup for mounting.  Please wait...",800,80) do | dialog|
 		items.each_with_index do | item,index|
 			dialog.setValue(index)
 			#pure directories are useless.
@@ -213,7 +214,7 @@ def buildLookup(profileName)
 				uriPath=[]
 				uriPath.push($currentCase.getName().gsub(/[\s\.\%\/\,\:\?\'\;\#\<\>\*[:cntrl:]]+/, ' ').strip())
 				uriPath.push(foldercount.to_s)
-				uriPath.push(item.getName().gsub(/[\s\.\%\/\,\:\?\'\;\#\<\>\*[:cntrl:]]+/, ' ').strip())
+				uriPath.push(item.getName().gsub(/[^\w\.\-]+/, '_').strip())
 				if($DebugLookup)
 					puts uriPath.to_s
 				end
@@ -301,14 +302,14 @@ def buildLookup(profileName)
 end
 
 settings={
-	"Profile"=>$utilities.getMetadataProfileStore().getMetadataProfiles().map{|meta|meta.getName()},
+	#"Profile"=>$utilities.getMetadataProfileStore().getMetadataProfiles().map{|meta|meta.getName()},
 	"IP Address"=>Socket.ip_address_list.map{|intf| intf.ip_address.to_s}
 }
 title="Case Mount: Settings"
 selected_values=getComboInput(settings,title)
 $address=selected_values["IP Address"]
 
-buildLookup(selected_values["Profile"])
+buildLookup() #selected_values["Profile"]
 
 
 
