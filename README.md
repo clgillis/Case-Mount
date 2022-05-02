@@ -3,9 +3,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) ![This script was last tested in Nuix 8.8](https://img.shields.io/badge/Script%20Tested%20in%20Nuix-9.2-green.svg)
 
-View the GitHub project [here](https://github.com/Nuix/Case-Mount) or download the latest release [here](https://github.com/Nuix/Case-Mount/releases).
-
-**Written By:** Clayten Gillis
+View the GitHub project [here](https://github.com/clgillis/Case-Mount-Item-Export) or download the latest release [here](https://github.com/clgillis/Case-Mount-Item-Export/releases).
 
 # Overview
 Display your Nuix selected case items as a drive letter (windows). This script when run will mount a drive letter representing the items you have selected.
@@ -14,7 +12,7 @@ Display your Nuix selected case items as a drive letter (windows). This script w
 
 ## Why would you want to do this?
 
-Prevention of any items exported for discovery that may contain a virus, malware, worms, etc. An antivirus application can be use to scan the drive mount and any items deleted will be excluded in your original case with the reason 'deleted'.
+Prevention of any items exported for discovery that may contain a virus, malware, worms, etc. An antivirus application can be used to scan the drive mount and any items deleted will be added to an exclusion list in your original case named 'deleted'.
 
 # Getting Started
 

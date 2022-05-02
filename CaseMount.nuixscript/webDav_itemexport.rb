@@ -34,7 +34,8 @@ import javax.swing.JLabel
 class ProgressDialog < JDialog
 	def initialize(value,min,max,title="Progress Dialog",width=800,height=80)
 		@progress_stat = JProgressBar.new  min, max
-		self.setValue(value)
+		@progress_stat.setStringPainted(true)
+		self.setValue(value,max)
 		@exportthread=nil
 		super nil, true
 		body=JPanel.new(java.awt.GridLayout.new(0,1))
@@ -53,8 +54,9 @@ class ProgressDialog < JDialog
 		self.setVisible true
 	end
 
-	def setValue(value=0)
+	def setValue(value,max)
 		@progress_stat.setValue(value)
+		@progress_stat.setString(value.to_s + "/" + max.to_s)
 	end
 
 
@@ -195,7 +197,7 @@ def buildLookup() #profileName
 	foldercount = 1
 	ProgressDialog.new(0,0,items.length+1,"Building item lookup for mounting.  Please wait...",800,80) do | dialog|
 		items.each_with_index do | item,index|
-			dialog.setValue(index)
+			dialog.setValue(index,items.length)
 			#pure directories are useless.
 			if(item.getType().getName()=="filesystem/directory")
 				loadfile=loadfile + "\n" + item.getGuid() + "\tSKIPPED: Directory"
@@ -214,7 +216,7 @@ def buildLookup() #profileName
 				uriPath=[]
 				uriPath.push($currentCase.getName().gsub(/[\s\.\%\/\,\:\?\'\;\#\<\>\*[:cntrl:]]+/, ' ').strip())
 				uriPath.push(foldercount.to_s)
-				uriPath.push(item.getName().gsub(/[^\w\.\-]+/, '_').strip())
+				uriPath.push(item.getName().gsub(/[^\w\.\-]+/, '_').strip())  #\x00:\xA1-\xFF  .gsub(/[\xA1-\xFF]+/, 'la') .gsub(/\xFC+/, 'la')  .gsub(/[\x00\s\.\%\/\,\:\?\'\;\#\<\>\*\@\|[:cntrl:]]+/, ' ')
 				if($DebugLookup)
 					puts uriPath.to_s
 				end
