@@ -3,7 +3,7 @@
 # Needs Case: true
 # Needs Selected Items: false
 # Author: Clayten Gillis
-# Version: 1.0
+# Version: 1.1
 runTests=false
 # Turn On/Off debug statements to console.  It is not recommended
 # that you turn all of them on at once.
@@ -221,20 +221,6 @@ def buildLookup() #profileName
 					puts uriPath.to_s
 				end
 				
-				# We don't build folder structure based on metaprofile
-				#0.upto(meta.length-1).each do | metaI |
-				#	val=evaluateToBasicString(meta[metaI],item).split(" ").join(" ")
-				#	uriPath.push(val)
-				#	puts "Val: " + val
-				#end
-				#if (items.length > 1000 )
-				#	
-				#else
-					#uriCurrentFolder = foldercount.to_s
-					#puts uriCurrentFolder
-					#uriPath.push(foldercount)
-				#end
-				
 				fullPath=uriPath.join("/")
 				if($DebugLookup)
 					puts "Folder Path: " + fullPath.to_s
@@ -304,14 +290,13 @@ def buildLookup() #profileName
 end
 
 settings={
-	#"Profile"=>$utilities.getMetadataProfileStore().getMetadataProfiles().map{|meta|meta.getName()},
 	"IP Address"=>Socket.ip_address_list.map{|intf| intf.ip_address.to_s}
 }
 title="Case Mount: Settings"
 selected_values=getComboInput(settings,title)
 $address=selected_values["IP Address"]
 
-buildLookup() #selected_values["Profile"]
+buildLookup() 
 
 
 
@@ -638,7 +623,110 @@ trap("INT") {
 }
 
 class MyServlet < WEBrick::HTTPServlet::AbstractServlet
+
+	def do_OPTIONS(request,response)
+		if($DebugServer)
+			puts "OPTIONS REQUEST:#{request.path}"
+		end
+		response.status=200
+		response.header['Allow']="GET, OPTIONS, HEAD, PROPFIND, DELETE"
+		response.header['Access-Control-Allow-Methods']="GET, OPTIONS, HEAD, PROPFIND, DELETE"
+		response.header['Access-Control-Max-Age']=5 # 5 seconds
+	end
+	
+	#status 423 = there is a lock on the file. Kind of like saying it's open.
+	
+	def do_POST(request,response)
+		if($DebugServer)
+			puts "POST REQUEST:#{request.path}"
+		end
+		response.status=423
+	end
+	
+	def do_MOVE(request,response)
+		if($DebugServer)
+			puts "MOVE REQUEST:#{request.path}"
+		end
+		response.status=423
+	end
+	
+	def do_GETLIB(request,response)
+		if($DebugServer)
+			puts "GETLIB REQUEST:#{request.path}"
+		end
+		response.status=423
+	end
+	
+	def do_LOCK(request,response)
+		if($DebugServer)
+			puts "LOCK REQUEST:#{request.path}"
+		end
+		response.status=423
+	end
+	
+	def do_UNLOCK(request,response)
+		if($DebugServer)
+			puts "UNLOCK REQUEST:#{request.path}"
+		end
+		response.status=423
+	end
+	
+	def do_MKCOL(request,response)
+		if($DebugServer)
+			puts "MKCOL REQUEST:#{request.path}"
+		end
+		response.status=423
+	end
+	
+	def do_TRACE(request,response) # server error, not implemented
+		if($DebugServer)
+			puts "TRACE REQUEST:#{request.path}"
+		end
+		response.status=501
+		response.content_type="text/plain"
+		response.body=ex.backtrace()
+	end
+		
+	def do_PROPPATCH(request,response)
+		if($DebugServer)
+			puts "PROPPATCH REQUEST:#{request.path}"
+		end
+		response.status=501
+		response.content_type="text/plain"
+		response.body=ex.backtrace()
+	end
+	
+	def do_HEAD(request,response)
+		if($DebugServer)
+			puts "HEAD REQUEST:#{request.path}"
+		end
+		begin
+			nuixItem=NuixItem.new(request.path)
+			response.status = 200
+			response.content_type = nuixItem.getType()
+		rescue DavError => ex
+			if($DebugServer)
+				puts "DavError.new (GET): " + ex.message
+			end
+			response.status=ex.status
+			response.content_type="text/plain"
+			response.body=ex.message
+		rescue Exception => ex
+			if($DebugServer)
+				puts "error"
+				puts ex.message
+				puts ex.backtrace()
+			end
+			response.status=500
+			response.content_type="text/plain"
+			response.body=ex.backtrace()
+		end
+	end
+
 	def do_PROPFIND(request,response)
+		if($DebugServer)
+			puts "PROPFIND REQUEST:#{request.path}"
+		end
 		begin
 			nuixItem=NuixItem.new(request.path)
 			response.status=200
@@ -667,6 +755,9 @@ class MyServlet < WEBrick::HTTPServlet::AbstractServlet
 		end
 	end
 	def do_PUT(request,response)
+		if($DebugServer)
+			puts "PUT REQUEST:#{request.path}"
+		end
 		if(request.path=="/shutdown")
 			response.status=201
 			disconnectDrive()
@@ -704,10 +795,13 @@ class MyServlet < WEBrick::HTTPServlet::AbstractServlet
 	end
 	
 	def do_GET (request, response)
+		if($DebugServer)
+			puts "GET REQUEST:#{request.path}"
+		end
 		begin
 			if($DebugServer)
-				#puts(request.path)
-				#puts request.path
+				puts(request.path)
+				puts request.path
 			end
 			nuixItem=NuixItem.new(request.path)
 			response.status = 200
