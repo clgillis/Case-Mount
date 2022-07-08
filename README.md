@@ -45,17 +45,20 @@ IP Address <-- most of the time the server will default to 127.0.0.1 for private
 
 ### Wait
 
-A cache will be built (progress dialog) which after a short while will finish and a drive letter will be shown to the user.
+A cache will be built (progress dialog) which after a while will finish and a drive letter will be shown to the user.  How long?  Script processes about 100K items per hour.  You mileage may vary.
+
 Drive letter is chosen from N: onwards.
 
-### Enjoy navigating!
+### Navagation and Directory Format
+
+Items are processed and mounted in a serialized folder format (1, 2, 3, etc) with upto 1000 files per folder.  This will be done up to a limit of 10,000 folders.  So the theoretical maximum numbers of items that can be exported in 10 million items.  Your mileage may vary.
 
 When you are finished, disconnect the drive in windows. The script checks every few seconds for the drives presence and when it is no longer used the webDav server will be stopped.
 
 As a failsafe when the case goes into a processing/reloading/closing states the server will also be stopped.
 
 ### Extra
-The port is usually going to be port 80, if unavailable will choose the next port.
+The port is usually going to be port 80, if unavailable the script will choose the next port.
 Similarly with Drive letter, the default is N: if unavailable the next letter will be chosen
 
 # License
